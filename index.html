@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torre de Hanói — Demonstração Recursiva</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Torre de <span>Hanói</span> — Recursividade</h1>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="status-msg">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Pronto para iniciar</span>
+      </span>
+      <span class="badge">AV1</span>
+    </div>
+  </header>
+
+  <div class="main-grid">
+
+    <div class="canvas-area">
+
+      <div class="controls">
+
+        <div class="ctrl-group" style="gap:6px">
+          <label>Hastes:</label>
+          <div class="peg-toggle">
+            <button id="peg3Btn" class="active" onclick="setPegs(3)">3</button>
+            <button id="peg4Btn" onclick="setPegs(4)">4</button>
+          </div>
+        </div>
+
+        <div class="ctrl-group">
+          <label>Discos:</label>
+          <select id="discCount"></select>
+        </div>
+
+        <div class="ctrl-group">
+          <label>Velocidade:</label>
+          <input type="range" id="speed" min="1" max="10" value="5">
+          <span id="speedVal" style="color:var(--accent);min-width:16px">5</span>
+        </div>
+
+        <button class="btn btn-primary" id="btnPlay">▶ Iniciar</button>
+        <button class="btn btn-secondary" id="btnStep" disabled>⏭ Passo</button>
+        <button class="btn btn-secondary" id="btnPause" disabled>⏸ Pausar</button>
+        <button class="btn btn-danger" id="btnReset">↺ Reset</button>
+        <button class="btn btn-limit" id="btnOpenPopup">⚡ 11–36 discos</button>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="algo-banner" id="algoBanner">
+        ✦ <strong>Frame-Stewart</strong>: 4 hastes permitem menos movimentos usando um auxiliar extra estrategicamente
+      </div>
+
+      <div class="towers-wrap" id="towersWrap"></div>
+    </div>
+
+    <div class="log-area">
+      <div class="log-title">📋 Log de Movimentos</div>
+      <div class="log-box" id="logBox"></div>
+    </div>
+
+    <div class="side-panel">
+
+      <div class="panel-section">
+        <div class="panel-title">⚙ Algoritmo (JS)</div>
+
+        <div id="codeBlock3" class="code-block">
+          <div class="code-line" id="cl1"><span class="ln">1</span><span class="kw">function</span> <span class="fn">hanoi</span>(<span class="param">n,orig,dest,aux</span>) {</div>
+          <div class="code-line" id="cl2"><span class="ln">2</span>&nbsp;&nbsp;<span class="kw">if</span> (n === <span class="str">1</span>) {</div>
+          <div class="code-line" id="cl3"><span class="ln">3</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">mover</span>(<span class="str">1</span>,<span class="param">orig</span>,<span class="param">dest</span>); <span class="cmt">// caso base</span></div>
+          <div class="code-line" id="cl4"><span class="ln">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span>;</div>
+          <div class="code-line" id="cl5"><span class="ln">5</span>&nbsp;&nbsp;}</div>
+          <div class="code-line" id="cl6"><span class="ln">6</span>&nbsp;&nbsp;<span class="fn">hanoi</span>(<span class="param">n</span>-<span class="str">1</span>,<span class="param">orig</span>,<span class="param">aux</span>,<span class="param">dest</span>); <span class="cmt">// ①</span></div>
+          <div class="code-line" id="cl7"><span class="ln">7</span>&nbsp;&nbsp;<span class="fn">mover</span>(<span class="param">n</span>,<span class="param">orig</span>,<span class="param">dest</span>); <span class="cmt">// ②</span></div>
+          <div class="code-line" id="cl8"><span class="ln">8</span>&nbsp;&nbsp;<span class="fn">hanoi</span>(<span class="param">n</span>-<span class="str">1</span>,<span class="param">aux</span>,<span class="param">dest</span>,<span class="param">orig</span>); <span class="cmt">// ③</span></div>
+          <div class="code-line" id="cl9"><span class="ln">9</span>}</div>
+        </div>
+
+        <div id="codeBlock4" class="code-block" style="display:none;margin-top:8px">
+          <div class="code-line" id="c4l1"><span class="ln">1</span><span class="kw">function</span> <span class="fn">hanoi4</span>(<span class="param">n,orig,dest,a1,a2</span>) {</div>
+          <div class="code-line" id="c4l2"><span class="ln">2</span>&nbsp;&nbsp;<span class="kw">if</span> (n &lt;= <span class="str">1</span>) { <span class="fn">mover</span>(); <span class="kw">return</span>; }</div>
+          <div class="code-line" id="c4l3"><span class="ln">3</span>&nbsp;&nbsp;<span class="kw">const</span> k = <span class="fn">optK</span>(n); <span class="cmt">// Frame-Stewart</span></div>
+          <div class="code-line" id="c4l4"><span class="ln">4</span>&nbsp;&nbsp;<span class="fn">hanoi4</span>(<span class="param">k</span>,orig,a1,a2,dest); <span class="cmt">// ①</span></div>
+          <div class="code-line" id="c4l5"><span class="ln">5</span>&nbsp;&nbsp;<span class="fn">hanoi3</span>(<span class="param">n-k</span>,orig,dest,a2); <span class="cmt">// ②</span></div>
+          <div class="code-line" id="c4l6"><span class="ln">6</span>&nbsp;&nbsp;<span class="fn">hanoi4</span>(<span class="param">k</span>,a1,dest,orig,a2); <span class="cmt">// ③</span></div>
+          <div class="code-line" id="c4l7"><span class="ln">7</span>}</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">📚 Pilha de Chamadas</div>
+        <div class="stack-box" id="callStack">
+          <div style="color:var(--text-dim);font-size:0.62rem;text-align:center;margin:auto">Aguardando...</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">📊 Estatísticas</div>
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-val" id="statMoves">0</div>
+            <div class="stat-label">Movimentos</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statTotal">—</div>
+            <div class="stat-label">Total previsto</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statDepth">0</div>
+            <div class="stat-label">Prof. pilha</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statCalls">0</div>
+            <div class="stat-label">Chamadas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+        <div class="panel-title">💡 Tipo de Recursividade</div>
+        <div class="info-box" id="infoBox"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">3 Hastes — Limites Reais</div>
+          <div class="modal-subtitle">Algoritmo recursivo executado via Web Worker · sem representação visual</div>
+        </div>
+        <button class="modal-close" id="popBtnClose">✕</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="modal-code-block">
+          <div class="code-line"><span class="ln">1</span><span class="kw">function</span> <span class="fn">hanoi</span>(<span class="param">n</span>) {</div>
+          <div class="code-line"><span class="ln">2</span>&nbsp;&nbsp;<span class="kw">if</span> (n === <span class="str">0</span>) <span class="kw">return</span>;</div>
+          <div class="code-line"><span class="ln">3</span>&nbsp;&nbsp;<span class="kw">if</span> (n === <span class="str">1</span>) { count++; <span class="kw">return</span>; }</div>
+          <div class="code-line"><span class="ln">4</span>&nbsp;&nbsp;<span class="fn">hanoi</span>(<span class="param">n</span> - <span class="str">1</span>); &nbsp;<span class="cmt">// ①</span></div>
+          <div class="code-line"><span class="ln">5</span>&nbsp;&nbsp;count++; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">// movimento</span></div>
+          <div class="code-line"><span class="ln">6</span>&nbsp;&nbsp;<span class="fn">hanoi</span>(<span class="param">n</span> - <span class="str">1</span>); &nbsp;<span class="cmt">// ③</span></div>
+          <div class="code-line"><span class="ln">7</span>}</div>
+        </div>
+
+        <div class="modal-controls">
+          <div class="ctrl-group">
+            <label>Discos:</label>
+            <select id="popDiscSel">
+              <option value="11" selected>11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+              <option value="24">24</option>
+              <option value="25">25</option>
+              <option value="26">26</option>
+              <option value="27">27</option>
+              <option value="28">28</option>
+              <option value="29">29</option>
+              <option value="30">30</option>
+              <option value="31">31</option>
+              <option value="32">32</option>
+              <option value="33">33</option>
+              <option value="34">34</option>
+              <option value="35">35</option>
+              <option value="36">36</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="popBtnRun">▶ Executar</button>
+          <button class="btn btn-danger" id="popBtnStop" disabled>■ Parar</button>
+          <span class="pop-status-badge" id="popStatus">Pronto</span>
+        </div>
+
+        <div class="pop-progress-bar">
+          <div class="progress-fill" id="popProgress" style="width:0%"></div>
+        </div>
+
+        <div class="pop-stats">
+          <div class="pop-stat">
+            <div class="pop-stat-label">Movimentos executados</div>
+            <div class="pop-stat-val accent" id="popExecMoves">0</div>
+          </div>
+          <div class="pop-stat">
+            <div class="pop-stat-label">Total previsto (2ⁿ−1)</div>
+            <div class="pop-stat-val" id="popTotalMoves">2.047</div>
+          </div>
+          <div class="pop-stat">
+            <div class="pop-stat-label">Taxa</div>
+            <div class="pop-stat-val" id="popRate">—</div>
+          </div>
+          <div class="pop-stat">
+            <div class="pop-stat-label">Tempo restante</div>
+            <div class="pop-stat-val dim" id="popEta">—</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="hanoi.js"></script>
+</body>
+
+</html>
